@@ -1,0 +1,3 @@
+CompanyID,Branch,FirstName,LastName,WSID1,WSID2,MappingYN,CardReaderDrive,GreenScreenYN,ExportToExcelYN,MidcomCardReaderYN,Printer1,Printer2,Printer3,Printer4,Printer5,OperatingSystem,SystemArchitecture
+BV,1,Danny,Meyers,A8,A9,n,E:,n,n,n,Epson FX-1050,Generic/ Text,,,,Windows XP Pro,x32
+BV,1,Sara,Tidmore,B8,B9,n,,n,n,n,Epson FX-1050,Generic/ Text,Lexmark 2600 Series,,,Windows 7 Pro,x64
