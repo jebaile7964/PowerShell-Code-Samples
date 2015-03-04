@@ -1,7 +1,8 @@
-﻿# This script creates RDP icons based on the content of a CSV file called "user list template.csv",
+# This script creates RDP icons based on the content of a CSV file called "user list template.csv",
 # and the content of a template RDP file called propanetest.rdp.
 
 # Prompt user to browse the csv file for import into the pipeline.
+$error.Clear()
 Function Get-FileName($initialDirectory){
    
     [void][System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms")
@@ -33,22 +34,29 @@ Function get-ip
     $objForm.StartPosition = "CenterScreen"
 
     $objForm.KeyPreview = $True
-    $objForm.Add_KeyDown({if ($_.KeyCode -eq "Enter") 
-        {$x=$objTextBox.Text;$objForm.Close()}})
-    $objForm.Add_KeyDown({if ($_.KeyCode -eq "Escape"){$objForm.Close()}})
+    $objForm.Add_KeyDown({
+        if ($_.KeyCode -eq "Enter") {
+            $objForm.DialogResult = [System.Windows.Forms.DialogResult]::OK
+        }
+    })
+    $objForm.Add_KeyDown({
+        if ($_.KeyCode -eq "Escape"){
+            $objForm.Close()
+        }
+    })
 
     $OKButton = New-Object System.Windows.Forms.Button
     $OKButton.Location = New-Object System.Drawing.Size(75,120)
     $OKButton.Size = New-Object System.Drawing.Size(75,23)
     $OKButton.Text = "OK"
-    $OKButton.Add_Click({$x=$objTextBox.Text;$objForm.Close()})
+    $OKButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
     $objForm.Controls.Add($OKButton)
 
     $CancelButton = New-Object System.Windows.Forms.Button
     $CancelButton.Location = New-Object System.Drawing.Size(150,120)
     $CancelButton.Size = New-Object System.Drawing.Size(75,23)
     $CancelButton.Text = "Cancel"
-    $CancelButton.Add_Click({$objForm.Close()})
+    $CancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
     $objForm.Controls.Add($CancelButton)
 
     $objLabel = New-Object System.Windows.Forms.Label
@@ -66,9 +74,11 @@ Function get-ip
 
     $objForm.Add_Shown({$objForm.Activate()})
     $result = $objForm.ShowDialog()
+    $objTextBox.text
 
     if ($result -eq [System.Windows.Forms.DialogResult]::Cancel){
         throw "Program Cancelled."
+
     }
 }
 
@@ -112,7 +122,7 @@ function create-icons{
 
     Write-Host "Creating Directories..." -ForegroundColor Yellow
     cd $env:homedrive\$env:HOMEPATH
-    if (!test-path (.\icons)){
+    if (!(test-path (".\icons"))){
         md icons
     }
     $import | ForEach-Object { 
@@ -125,14 +135,14 @@ function create-icons{
         Catch{
             if ($error[0].FullyQualifiedErrorId -eq "DirectoryExist,Microsoft.PowerShell.Commands.NewItemCommand"){
                 Write-Host "Directories exist, performing cleanup..." -ForegroundColor Yellow
-                Remove-Item -Path .\$username -Recurse -Force
-                md $username
+                Remove-Item -Path .\icons\$username -Recurse -Force
+                md .\icons\$username
                 }
         }
         finally{
             # Creates icons based on $rdparray and WSID fields.
-            $rdp1 = $rdparray -replace 'remoteapplicationcmdline:s:INSERTWSIDHERE',"remoteapplicationcmdline:s:$($_.wsid1)" | set-content ".\$username\Propane $($_.wsid1).rdp"
-            $rdp2 = $rdparray -replace 'remoteapplicationcmdline:s:INSERTWSIDHERE',"remoteapplicationcmdline:s:$($_.wsid2)" | set-content ".\$username\Propane $($_.wsid2).rdp"
+            $rdp1 = $rdparray -replace 'remoteapplicationcmdline:s:INSERTWSIDHERE',"remoteapplicationcmdline:s:$($_.wsid1)" | set-content ".\icons\$username\Propane $($_.wsid1).rdp"
+            $rdp2 = $rdparray -replace 'remoteapplicationcmdline:s:INSERTWSIDHERE',"remoteapplicationcmdline:s:$($_.wsid2)" | set-content ".\icons\$username\Propane $($_.wsid2).rdp"
         }
     }
 }
