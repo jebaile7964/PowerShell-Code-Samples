@@ -122,19 +122,19 @@ function Transfer-CPSOutput{
     }    
 
     <#
- # You can use this to dynamically create the listbox from the COIDS.TXT file located in the RPG directory.  
- # Additional changes must be made to the form to be able to use the logic, though.
+ 	# You can use this to dynamically create the listbox from the COIDS.TXT file located in the RPG directory.  
+ 	# Additional changes must be made to the form to be able to use the logic, though.
 
- function Get-CID ($rpgdir){
+ 	function Get-CID ($rpgdir){
 
-    $CID = @()
-    $COIDS = get-content "$rpgdir\coids.txt"
-    $COIDS = $COIDs -split (';')
+		$CID = @()
+    		$COIDS = get-content "$rpgdir\coids.txt"
+    		$COIDS = $COIDs -split (';')
 
-    $COIDS | ForEach-Object {
-        $CID += $_
-    }
- }
+    		$COIDS | ForEach-Object {
+        	$CID += $_
+    		}
+ 	}
  #>
 
     PROCESS{      
