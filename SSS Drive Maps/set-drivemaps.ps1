@@ -1,6 +1,6 @@
 BEGIN{
-    $pass="PASSWORD"|ConvertTo-SecureString -AsPlainText -Force
-    $Cred = New-Object System.Management.Automation.PsCredential("USERNAME",$pass)
+    $pass="dnhos@sss$%&("|ConvertTo-SecureString -AsPlainText -Force
+    $Cred = New-Object System.Management.Automation.PsCredential("administrator4sss@suburbandomain",$pass)
     $logname = "drivemaplog.txt"
     $dir = "c:\log"
     $log = join-path -Path $dir -ChildPath $logname
@@ -23,7 +23,7 @@ PROCESS{
         $drive = New-Object -TypeName system.object
         $drive | Add-Member -MemberType NoteProperty -Name "DriveLetter" -Value $d
         $drive | Add-Member -MemberType NoteProperty -Name "Name" -Value $name[$i]
-        $drive | Add-Member -MemberType NoteProperty -Name "UNCPath" -Value (join-path -path \\SERVERNAME -childpath $name[$i])
+        $drive | Add-Member -MemberType NoteProperty -Name "UNCPath" -Value (join-path -path \\ibm2008 -childpath $name[$i])
         $drivearray += $drive
         $i++
     }
@@ -33,9 +33,9 @@ PROCESS{
         try{
             # use this for testing
             # net use $_.driveletter $_.uncpath 
-            net use ($_.driveletter+":")
+            net use ($_.driveletter+":") | Out-Null
             if ($LASTEXITCODE -eq "0"){
-               $del = net use ($_.driveletter+":") /delete
+               $del = net use $($_.driveletter+":") /delete
                Add-Content -Value "$date - $del" -Path $log
             }
             if ((get-psdrive -Name ($_.driveletter)) -eq ($_.driveletter)){
@@ -45,17 +45,17 @@ PROCESS{
         catch{
             if ($LASTEXITCODE -ne "0"){
                 Add-Content -Value "$date - $error[0].fullyqualifiederrorid - $LASTEXITCODE" -Path $log
-                if($pserror[0].fullyqualifiederrorid -eq "DriveNotFound,Microsoft.PowerShell.Commands.RemovePSDriveCommand"){
-                    Add-Content -Value "$date - $pserror[0].fullyqualifiederrorid" -Path $log
                 }
+            if($pserror[0].fullyqualifiederrorid -eq "DriveNotFound,Microsoft.PowerShell.Commands.RemovePSDriveCommand"){
+                Add-Content -Value "$date - $pserror[0].fullyqualifiederrorid" -Path $log
             }
         }
         Finally{
             try{
-                New-PSDrive -Name ($_.driveletter) -PSProvider FileSystem -Root ($_.uncpath) -Description "($_.name)" -Scope Global -Persist -Credential $cred -ErrorVariable finallyerror
+                New-PSDrive -Name $($_.driveletter) -PSProvider FileSystem -Root $($_.uncpath) -Description "$($_.name)" -Scope Global -Persist -Credential $cred -ErrorVariable finallyerror -ErrorAction stop
             }
             catch{
-                if ($finallyerror){
+                if ($finallyerror -ne $null){
                     Add-Content -Value "$date - $finallyerror[0].fullyqualifiederrorid" -Path $log
                 }
             }
