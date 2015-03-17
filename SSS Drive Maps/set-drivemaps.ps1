@@ -1,6 +1,8 @@
+# replace PASSWORD, USERNAME, and SERVERNAME for the script to work.
+
 BEGIN{
-    $pass="dnhos@sss$%&("|ConvertTo-SecureString -AsPlainText -Force
-    $Cred = New-Object System.Management.Automation.PsCredential("administrator4sss@suburbandomain",$pass)
+    $pass="PASSWORD"|ConvertTo-SecureString -AsPlainText -Force
+    $Cred = New-Object System.Management.Automation.PsCredential("USERNAME",$pass)
     $logname = "drivemaplog.txt"
     $dir = "c:\log"
     $log = join-path -Path $dir -ChildPath $logname
@@ -23,7 +25,7 @@ PROCESS{
         $drive = New-Object -TypeName system.object
         $drive | Add-Member -MemberType NoteProperty -Name "DriveLetter" -Value $d
         $drive | Add-Member -MemberType NoteProperty -Name "Name" -Value $name[$i]
-        $drive | Add-Member -MemberType NoteProperty -Name "UNCPath" -Value (join-path -path \\ibm2008 -childpath $name[$i])
+        $drive | Add-Member -MemberType NoteProperty -Name "UNCPath" -Value (join-path -path \\SERVERNAME -childpath $name[$i])
         $drivearray += $drive
         $i++
     }
