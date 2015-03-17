@@ -103,7 +103,7 @@ function create-icons{
         "prompt for credentials on client:i:1",
         "remoteapplicationmode:i:1",
         "server port:i:3389",
-        "authentication level:i:1",
+        "authentication level:i:0",
         "allow font smoothing:i:1",
         "promptcredentialonce:i:1",
         "gatewayusagemethod:i:2",
