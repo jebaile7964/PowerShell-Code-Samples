@@ -4,7 +4,7 @@
    ExportTo-Excel
 .AUTHOR
     Jonathan Bailey
-.Synopsis
+.SYNOPSIS
    Allows user to choose a CSV file to export to his local machine.
 .SYNTAX
    ExportTo-Excel [-InitialDirectory] <String[]> [-ExportFolder] <String[]> [-Description] <String[]> [-DisplayName] <String[]>
@@ -167,7 +167,7 @@ function Get-LogError{
     Get-LogError
 .AUTHOR
     Jonathan Bailey
-.Synopsis
+.SYNOPSIS
    Gets errors from error variable $logerror and 
 .DESCRIPTION
    When this function is called, it looks for what's in $logerror and outputs everything in the array.
@@ -226,7 +226,9 @@ function Get-LogError{
 }
 
 function Install-Chocolatey{
-
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
     BEGIN{
         $dir = $ENV:HOMEDRIVE
         $date = (get-date).DateTime
@@ -265,6 +267,9 @@ function Install-Chocolatey{
 }
 
 Function Install-WMF3{
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
 
     BEGIN{}
     PROCESS{
@@ -292,6 +297,9 @@ Function Install-WMF3{
 }
 
 Function Install-WMF4{
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
 
     BEGIN{}
     PROCESS{
@@ -316,6 +324,9 @@ Function Install-WMF4{
 }
 
 Function Install-ReportViewer11{
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
 
     BEGIN{}
     PROCESS{
@@ -328,6 +339,9 @@ Function Install-ReportViewer11{
 }
 
 Function Install-SQLCLRTypes{
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
 
     BEGIN{}
     PROCESS{
@@ -351,6 +365,9 @@ Function Install-SQLCLRTypes{
 }
 
 Function Install-DotNet45{
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
     BEGIN{}
     PROCESS{
         choco install dotnet4.5
@@ -361,6 +378,9 @@ Function Install-DotNet45{
 }
 
 Function Install-MapPoint{
+    [CmdletBinding(DefaultParameterSetName="Install",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
     BEGIN{
         $test = Get-WmiObject -Class win32_product | Where-Object {
             $_.name -eq "Microsoft Mappoint North America 2006"
@@ -380,9 +400,9 @@ Function Set-UEFIActivation{
 <#
 .NAME
     Set-UEFIActivation
-.Author
+.AUTHOR
 	Jonathan Bailey
-.Synopsis
+.SYNOPSIS
     Pulls the Product key hex value from the motherboard, converts it to ASCII, and pipes it to slmgr.vbs for activation.
 .SYNTAX
    Set-UEFIActivation [-OA3ToolPath] <string> 
@@ -438,9 +458,9 @@ Function Create-AVExceptions{
 <#
 .NAME
     Create-AVExceptions
-.Author
+.AUTHOR
 	Jonathan Bailey
-.Synopsis
+.SYNOPSIS
    Generates a list of UNC paths to add to exclusion / exceptions lists for Antivirus.
 .SYNTAX
     Create-AVExceptions
@@ -520,9 +540,9 @@ Function Set-DriveMaps{
 <#
 .NAME
     Set-DriveMaps
-.Author
+.AUTHOR
 	Jonathan Bailey
-.Synopsis
+.SYNOPSIS
     sets drivemaps to a file share not on the domain through secure string credentials.
 .SYNTAX
    Set-driveMaps [-Username] <String[]> [-Password] <String[]> 
@@ -616,6 +636,144 @@ Function Set-DriveMaps{
                     }
                 }
             }
+        }
+    }
+    END{}
+}
+
+Function Rename-SSSPC{
+    <#
+    .AUTHOR
+        Jonathan Baily and Tyler Brown
+    .SYNOPSIS 
+       Renames a computer. 
+    .DESCRIPTION
+       Renames the computer by grabing the serial number off the motherboard and replacing the current computer name.
+    .EXAMPLE
+       Rename-SSSPC
+    .INPUTS
+       No inputs required.  This CMDlet pulls information from the motherboard of the PC.
+    .OUTPUTS
+       No outputs.  The data is automatically piped to the Rename-Computer CMDlet.
+    .NOTES
+       This CMDlet requires no parameters.  This CMDlet only runs on PowerShell 4.0.
+    .COMPONENT
+       This CMDlet belongs to the SSSCMDlets Module.
+    #>
+    CMDletbinding[( DefaultParameterSetName='Static', 
+                    SupportsShouldProcess=$true, 
+                    PositionalBinding=$false
+                 )]
+    BEGIN {}
+    PROCESS {
+        $serial = gcim win32_bios | select -Property serialnumber | ft -HideTableHeaders
+        $serial = $serial | out-string
+        $serial = $serial.trim( )
+        Rename-Computer -ComputerName (gcim win32_operatingsystem).CSName -NewName $serial
+    }
+    END{}
+}
+
+Function Create-ShortcutIcons{
+<#
+.NAME
+    Create-Shortcuts
+.AUTHOR
+    Jonathan Bailey
+.SYNOPSIS
+    Creates shortcuts corresponding to the proper workstation IDs.
+.DESCRIPTION
+    Can either pull shortcut IDs from a CSV, or from a set of IDs provided as a parameter.
+.EXAMPLE
+    Create-Shortcuts -WSID AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
+.EXAMPLE
+    Create-Shortcuts -CSV "D:\icons.csv" -RPGDirectory "D:\RPG" -Version "Propane" -Destination "D:\icons"
+.INPUTS
+    Can either take indivdual or multiple WSIDs, or a CSV file with WSIDs.  If using a CSV, please label
+    the column WSID.
+.OUTPUTS
+    Creates a shortcut link in the provided destination folder.
+.COMPONENT
+    This CMDlet is part of SSSCMDlets Module.
+#>
+    [CmdletBinding(DefaultParameterSetName ='WSID', 
+                   SupportsShouldProcess=$true, 
+                   PositionalBinding=$false
+                  )]
+    Param
+    (
+        # Used in declaring WSID manually.
+        [Parameter(Mandatory=$true, 
+                   ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true, 
+                   ValueFromRemainingArguments=$false, 
+                   Position=0,
+                   ParameterSetName='WSID')]
+        $WSID,
+
+        [Parameter( Mandatory = $true,
+                    ValueFromPipeline = $true,
+                    ValueFromPipelineByPropertyName = $true,
+                    Position = 1
+                  )]
+        $RPGDirectory,
+
+        # Choose SSS or Propane
+        [Parameter( Mandatory = $true,
+                    ValueFromPipeline = $false,
+                    ValueFromRemainingArguments = $false,
+                    Position = 2
+                  )]
+        [ValidateSet("SSS","Propane")]
+        $Version,
+
+        [Parameter( Mandatory = $true,
+                    ValueFromPipeline = $true,
+                    ValueFromRemainingArguments = $false,
+                    Position = 3
+                  )]
+        [String]
+        $Destination,
+
+        # Param3 help description
+        [Parameter( ParameterSetName='CSV',
+                    Mandatory = $true,
+                    ValueFromPipeline = $true,
+                    ValueFromRemainingArguments = $false,
+                    Position = 4
+                  )]
+        [String]
+        $CSV
+    )
+
+    Begin{
+        $WSID = @()
+        Set-Location $Destination
+    }
+    Process{
+        If ($CSV -ne $null){
+            $CSVar = Import-Csv $CSV
+            $CSVar | foreach {
+                $WSID += $_.WSID
+            }
+        }
+        If($Version -eq "SSS"){
+            $RPGProgram = Join-Path $RPGDirectory -ChildPath "#library\b36run.exe"
+            $IconName = "SSS"
+        }
+        If ($Version -eq "Propane"){
+            $RPGProgram = Join-Path $RPGDirectory -ChildPath "vblib\propane.exe"
+            $IconName = "Propane"
+        }
+
+        # Create a Shortcut with Windows PowerShell
+        $WSID | foreach {
+            $TargetFile = "$RPGProgram $WSID"
+            $ShortcutFile = "$Destination\$IconName $WSID.lnk"
+            $WScriptShell = New-Object -ComObject WScript.Shell
+            $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+            $Shortcut.TargetPath = $TargetFile
+            $Shortcut.Save()
         }
     }
     END{}
