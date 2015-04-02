@@ -1,4 +1,4 @@
-﻿Function Create-ShortcutIcons{
+Function Create-ShortcutIcons{
 <#
 .NAME
     Create-Shortcuts
@@ -107,4 +107,8 @@
         }
     }
     END{}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 2ab55d79e8de481fafac25e1c3c9887fa12752f6
