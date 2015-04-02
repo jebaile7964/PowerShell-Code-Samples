@@ -9,7 +9,7 @@
 .DESCRIPTION
     Can either pull shortcut IDs from a CSV, or from a set of IDs provided as a parameter.
 .EXAMPLE
-    Create-Shortcuts -WSID AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
+    Create-Shortcuts -IDName AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
 .EXAMPLE
     Create-Shortcuts -CSV "D:\icons.csv" -RPGDirectory "D:\RPG" -Version "Propane" -Destination "D:\icons"
 .INPUTS
@@ -33,7 +33,7 @@
                    ValueFromRemainingArguments=$false, 
                    Position=0,
                    ParameterSetName='WSID')]
-        $WSID,
+        $IDName,
 
         [Parameter( Mandatory = $true,
                     ValueFromPipeline = $true,
@@ -80,6 +80,12 @@
             $CSVar | foreach {
                 $WSID += $_.WSID
             }
+        If ($IDName -ne $null){
+            $IDName -split (",")
+            $IDName | foreach {
+                $WSID += $_
+            }
+        }
         }
         If($Version -eq "SSS"){
             $RPGProgram = Join-Path $RPGDirectory -ChildPath "#library\b36run.exe"
@@ -102,4 +108,3 @@
     }
     END{}
 }
-
