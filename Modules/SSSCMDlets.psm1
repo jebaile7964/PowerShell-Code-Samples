@@ -226,9 +226,10 @@ function Get-LogError{
 }
 
 function Install-Chocolatey{
-    [CmdletBinding(DefaultParameterSetName="Install",
+    [CmdletBinding(DefaultParameterSetName ="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
     BEGIN{
         $dir = $ENV:HOMEDRIVE
         $date = (get-date).DateTime
@@ -270,6 +271,7 @@ Function Install-WMF3{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
 
     BEGIN{}
     PROCESS{
@@ -300,6 +302,7 @@ Function Install-WMF4{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
 
     BEGIN{}
     PROCESS{
@@ -327,6 +330,7 @@ Function Install-ReportViewer11{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
 
     BEGIN{}
     PROCESS{
@@ -342,6 +346,7 @@ Function Install-SQLCLRTypes{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
 
     BEGIN{}
     PROCESS{
@@ -368,6 +373,7 @@ Function Install-DotNet45{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
     BEGIN{}
     PROCESS{
         choco install dotnet4.5
@@ -381,6 +387,7 @@ Function Install-MapPoint{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
                    PositionalBinding=$false)]
+    Param()
     BEGIN{
         $test = Get-WmiObject -Class win32_product | Where-Object {
             $_.name -eq "Microsoft Mappoint North America 2006"
