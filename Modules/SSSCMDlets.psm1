@@ -334,11 +334,9 @@ Function Install-ReportViewer11{
 
     BEGIN{}
     PROCESS{
-        choco install reportviewer.2012 -version 11.1.3452.0
+        choco install reportviewer.2012 -version 11.1.3452.0 -y
     }
-    END{
-        $logerror.clear()
-    }
+    END{}
 
 }
 
@@ -376,18 +374,21 @@ Function Install-DotNet45{
     Param()
     BEGIN{}
     PROCESS{
-        choco install dotnet4.5
+        choco install dotnet4.5 -y
     }
-    END{
-        $logerror.clear()
-    }
+    END{}
 }
 
 Function Install-MapPoint{
     [CmdletBinding(DefaultParameterSetName="Install",
                    SupportsShouldProcess=$true,
-                   PositionalBinding=$false)]
-    Param()
+                   PositionalBinding=$true)]
+    Param( 
+           [Parameter(Mandatory=$true,
+                     ValueFromPipelineByPropertyName=$true,
+                     Position=0)]
+           $dir       
+          )
     BEGIN{
         $test = Get-WmiObject -Class win32_product | Where-Object {
             $_.name -eq "Microsoft Mappoint North America 2006"
@@ -395,12 +396,10 @@ Function Install-MapPoint{
     }
     PROCESS{
         if ( $test.name -ne "Microsoft Mappoint North America 2006"){
-            msiexec /i q:\map2006\mappoint\msmap\data.msi /qn /norestart /le c:\mappointlog.txt OFFICE_INTEGRATION=0
+            msiexec /i $dir\map2006\mappoint\msmap\data.msi /qn /norestart /le c:\mappointlog.txt OFFICE_INTEGRATION=0
         }
     }
-    END{
-        Remove-Variable $test
-    }
+    END{}
 }
 
 Function Set-UEFIActivation{
@@ -461,16 +460,16 @@ Function Set-UEFIActivation{
     END{}
 }
 
-Function Create-AVExceptions{
+Function New-AVException{
 <#
 .NAME
-    Create-AVExceptions
+    New-AVException
 .AUTHOR
 	Jonathan Bailey
 .SYNOPSIS
    Generates a list of UNC paths to add to exclusion / exceptions lists for Antivirus.
 .SYNTAX
-    Create-AVExceptions
+    New-AVException
 .DESCRIPTION
     This script will attempt to get psdrive informationand if an error occurs, it will
     attempt to gather the information using net use.  If everything goes well, a list of exceptions
@@ -667,10 +666,10 @@ Function Rename-SSSPC{
     .COMPONENT
        This CMDlet belongs to the SSSCMDlets Module.
     #>
-    CMDletbinding[( DefaultParameterSetName='Static', 
+    [CMDletbinding( DefaultParameterSetName = 'Static', 
                     SupportsShouldProcess=$true, 
-                    PositionalBinding=$false
-                 )]
+                    PositionalBinding=$false)]
+    Param()
     BEGIN {}
     PROCESS {
         $serial = gcim win32_bios | select -Property serialnumber | ft -HideTableHeaders
@@ -681,10 +680,10 @@ Function Rename-SSSPC{
     END{}
 }
 
-Function Create-ShortcutIcons{
+Function New-ShortcutIcons{
 <#
 .NAME
-    Create-Shortcuts
+    New-Shortcuts
 .AUTHOR
     Jonathan Bailey
 .SYNOPSIS
@@ -692,9 +691,9 @@ Function Create-ShortcutIcons{
 .DESCRIPTION
     Can either pull shortcut IDs from a CSV, or from a set of IDs provided as a parameter.
 .EXAMPLE
-    Create-Shortcuts -IDName AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
+    New-Shortcuts -IDName AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
 .EXAMPLE
-    Create-Shortcuts -CSV "D:\icons.csv" -RPGDirectory "D:\RPG" -Version "Propane" -Destination "D:\icons"
+    New-Shortcuts -CSV "D:\icons.csv" -RPGDirectory "D:\RPG" -Version "Propane" -Destination "D:\icons"
 .INPUTS
     Can either take indivdual or multiple WSIDs, or a CSV file with WSIDs.  If using a CSV, please label
     the column WSID.
