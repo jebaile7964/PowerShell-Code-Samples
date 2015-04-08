@@ -477,7 +477,13 @@ Function New-AVException{
 #>
 
 # Gives proper formatting to error status for Get-PsDrive
+    [CMDletBinding(DefaultParameterSetName="DisplayExceptions",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$false)]
+    Param()
     BEGIN{
+        $error.clear()
+        $drivemap = $null
         $errornull = @"
 Error status is Null. Using Get-PsDrive to generate UNC Path.
 "@
@@ -485,10 +491,8 @@ Error status is Null. Using Get-PsDrive to generate UNC Path.
     PROCESS{
         # Attempts to generate UNC Data using Get-PsDrive
         try {
-            $error.clear()
-            $drivemap = $null
             $test = Get-PSDrive -Name I -ErrorAction Stop
-            if ($test.DisplayRoot -notcontains "\\"){
+            if ($test.DisplayRoot -notlike "\\*"){
                 throw "DisplayRoot does not contain a UNC path."
             }
     
