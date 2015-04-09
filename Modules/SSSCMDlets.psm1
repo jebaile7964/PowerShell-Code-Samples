@@ -609,7 +609,7 @@ Function Set-DriveMaps{
             $drive = New-Object -TypeName system.object
             $drive | Add-Member -MemberType NoteProperty -Name "DriveLetter" -Value $d
             $drive | Add-Member -MemberType NoteProperty -Name "Name" -Value $name[$i]
-            $drive | Add-Member -MemberType NoteProperty -Name "UNCPath" -Value (join-path -path \\SERVERNAME -childpath $name[$i])
+            $drive | Add-Member -MemberType NoteProperty -Name "UNCPath" -Value (join-path -path \\IBM2008 -childpath $name[$i])
             $drivearray += $drive
             $i++
         }
@@ -624,7 +624,7 @@ Function Set-DriveMaps{
                    $del = net use ($_.driveletter+":") /delete
                    Add-Content -Value "$date - $del" -Path $log
                 }
-                if ((get-psdrive -Name ($_.driveletter)) -eq ($_.driveletter)){
+                if ((get-psdrive -Name ($_.driveletter) -ErrorAction SilentlyContinue) -eq ($_.driveletter)){
                     Remove-PSDrive -Name ($_.driveletter) -ErrorVariable pserror -ErrorAction Stop
                 }
             }
@@ -761,35 +761,40 @@ Function New-ShortcutIcons{
         Set-Location $Destination
     }
     Process{
-        If ($CSV -ne $null){
+        If ($CSV.Length -gt 0){
             $CSVar = Import-Csv $CSV
             $CSVar | foreach {
                 $WSID += $_.WSID
             }
-        If ($IDName -ne $null){
-            $IDName -split (",")
+        }
+        If ($IDName.Length -gt 0){
             $IDName | foreach {
                 $WSID += $_
             }
         }
-        }
         If($Version -eq "SSS"){
-            $RPGProgram = Join-Path $RPGDirectory -ChildPath "#library\b36run.exe"
+            $WorkDir = Join-Path $RPGDirectory -ChildPath "#library"
+            $RPGProgram = Join-Path $WorkDir -ChildPath "b36run.exe"
             $IconName = "SSS"
         }
         If ($Version -eq "Propane"){
-            $RPGProgram = Join-Path $RPGDirectory -ChildPath "vblib\propane.exe"
+            $WorkDir = Join-Path $RPGDirectory -ChildPath "VBLib"
+            $RPGProgram = Join-Path $WorkDir -ChildPath "propane.exe"
             $IconName = "Propane"
         }
 
         # Create a Shortcut with Windows PowerShell
+        $i = 0
         $WSID | foreach {
-            $TargetFile = "$RPGProgram $WSID"
-            $ShortcutFile = "$Destination\$IconName $WSID.lnk"
+            $TargetFile = $RPGProgram
+            $ShortcutFile = $Destination + "\" + $IconName + " " + $WSID[$i] + ".lnk"
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $TargetFile
+            $Shortcut.Arguments = $WSID[$i]
+            $Shortcut.WorkingDirectory = $WorkDir
             $Shortcut.Save()
+            $i++
         }
     }
     END{}
