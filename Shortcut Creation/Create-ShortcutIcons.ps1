@@ -1,7 +1,7 @@
-Function Create-ShortcutIcons{
+Function New-ShortcutIcons{
 <#
 .NAME
-    Create-Shortcuts
+    New-Shortcuts
 .AUTHOR
     Jonathan Bailey
 .SYNOPSIS
@@ -9,9 +9,9 @@ Function Create-ShortcutIcons{
 .DESCRIPTION
     Can either pull shortcut IDs from a CSV, or from a set of IDs provided as a parameter.
 .EXAMPLE
-    Create-Shortcuts -IDName AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
+    New-Shortcuts -IDName AA,A1,A2 -RPGDirectory "I:\RPG" -Version "SSS" -Destination "I:\icons"
 .EXAMPLE
-    Create-Shortcuts -CSV "D:\icons.csv" -RPGDirectory "D:\RPG" -Version "Propane" -Destination "D:\icons"
+    New-Shortcuts -CSV "D:\icons.csv" -RPGDirectory "D:\RPG" -Version "Propane" -Destination "D:\icons"
 .INPUTS
     Can either take indivdual or multiple WSIDs, or a CSV file with WSIDs.  If using a CSV, please label
     the column WSID.
@@ -75,40 +75,41 @@ Function Create-ShortcutIcons{
         Set-Location $Destination
     }
     Process{
-        If ($CSV -ne $null){
+        If ($CSV.Length -gt 0){
             $CSVar = Import-Csv $CSV
             $CSVar | foreach {
                 $WSID += $_.WSID
             }
-        If ($IDName -ne $null){
-            $IDName -split (",")
+        }
+        If ($IDName.Length -gt 0){
             $IDName | foreach {
                 $WSID += $_
             }
         }
-        }
         If($Version -eq "SSS"){
-            $RPGProgram = Join-Path $RPGDirectory -ChildPath "#library\b36run.exe"
+            $WorkDir = Join-Path $RPGDirectory -ChildPath "#library"
+            $RPGProgram = Join-Path $WorkDir -ChildPath "b36run.exe"
             $IconName = "SSS"
         }
         If ($Version -eq "Propane"){
-            $RPGProgram = Join-Path $RPGDirectory -ChildPath "vblib\propane.exe"
+            $WorkDir = Join-Path $RPGDirectory -ChildPath "VBLib"
+            $RPGProgram = Join-Path $WorkDir -ChildPath "propane.exe"
             $IconName = "Propane"
         }
 
         # Create a Shortcut with Windows PowerShell
+        $i = 0
         $WSID | foreach {
-            $TargetFile = "$RPGProgram $WSID"
-            $ShortcutFile = "$Destination\$IconName $WSID.lnk"
+            $TargetFile = $RPGProgram
+            $ShortcutFile = $Destination + "\" + $IconName + " " + $WSID[$i] + ".lnk"
             $WScriptShell = New-Object -ComObject WScript.Shell
             $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
             $Shortcut.TargetPath = $TargetFile
+            $Shortcut.Arguments = $WSID[$i]
+            $Shortcut.WorkingDirectory = $WorkDir
             $Shortcut.Save()
+            $i++
         }
     }
     END{}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 2ab55d79e8de481fafac25e1c3c9887fa12752f6
