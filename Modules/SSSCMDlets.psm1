@@ -799,3 +799,61 @@ Function New-ShortcutIcons{
     }
     END{}
 }
+
+Function New-GitRepo{
+<#
+.NAME
+   New-GitRepo
+.AUTHOR
+   Jonathan Bailey
+.SYNOPSIS
+   Creates a Git repository at file path the user specifies.
+.SYNTAX
+   New-GitRepo [-RepoName] <String[]> [-GitRepo] <String[]>
+.DESCRIPTION
+   Function checks to see if git is installed, and if it isn't it installs git.  If git is installed,
+   the function then runs git to make a clone of the primary repository located on github.
+.EXAMPLE
+   New-GitRepo -RepoName ssscmdlets -GitRepo https://github.com/contoso/sss-cmdlets.git
+   
+   This command creates a repository at $home\modules\ssscmdlets 
+#>
+
+    [CMDletBinding(DefaultParameterSetName="CreateRepo",
+                   SupportsShouldProcess=$true,
+                   PositionalBinding=$true
+                  )]
+
+    Param(
+
+    [Parameter(Mandatory=$true,
+               ValueFromPipelineByPropertyName=$true,
+               Position=0)]
+    $RepoName,
+    [Parameter(Mandatory=$true,
+               ValueFromPipelineByPropertyName=$true,
+               Position=0)]
+    $GitRepo
+    )
+    BEGIN{
+        $RepoDir = Join-Path -Path $home\Documents\WindowsPowerShell\Modules\ -ChildPath $RepoName
+    }
+
+    PROCESS{
+
+        $GitPath = Join-Path ${env:ProgramFiles(x86)} -ChildPath \git
+        if (test-path ($GitPath) -eq $false){
+            choco.exe install git
+        }
+
+
+        if (test-path ($RepoDir) -eq $false){
+            New-Item -Path $RepoDir -ItemType directory
+        }
+
+        Set-Location $RepoName
+        git.exe init
+        git.exe clone $GitRepo
+    }
+    END{}
+}
