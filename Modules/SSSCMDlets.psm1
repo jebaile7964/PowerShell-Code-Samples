@@ -168,7 +168,7 @@ function Get-LogError{
 .AUTHOR
     Jonathan Bailey
 .SYNOPSIS
-   Gets errors from error variable $logerror and 
+   Gets errors from error variable $logerrorvariable and puts them into a text file that buffers up to 300 lines. 
 .DESCRIPTION
    When this function is called, it looks for what's in $logerror and outputs everything in the array.
 .SYNTAX
@@ -557,10 +557,8 @@ Function Set-DriveMaps{
 .SYNTAX
    Set-driveMaps [-Username] <String[]> [-Password] <String[]> 
 .DESCRIPTION
-    This script pulls the product key from a UEFI/Windows 8 motherboard for use in oem key activation in legacy mode.
-    Make sure to Have oa3tool.exe in the same working directory as this script.  It is part of Microsoft ADK.
-    Use this script to install 32-bit versions of Windows 8.1 on UEFI OEM machines running in legacy mode.  
-    Since activation doesn't occur automatically, manual activation is necessary.
+    when run as part of a script, this allows users to log in using custom credentials.
+    It maps all drive required for internal SSS mission critical file access.
 .EXAMPLE
    Set-DriveMaps -Username "Contoso\administrator" -Password "P@ssw0rd"
    
