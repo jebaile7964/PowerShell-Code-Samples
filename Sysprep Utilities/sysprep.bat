@@ -1,1 +1,0 @@
-c:\windows\system32\sysprep\sysprep.exe /oobe /generalize /unattend:"c:\unattend.xml" /quit
