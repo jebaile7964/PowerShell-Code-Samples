@@ -13,9 +13,11 @@ Before testing this push configuration, please run the following on the test ser
 
 Also be sure to download the DSC Resource kit at:
 
-`    https://github.com/PowerShell/xPSDesiredStateConfiguration
+    https://github.com/PowerShell/xPSDesiredStateConfiguration
 
-and install it at `$env:programfiles\windowspowershell\modules.
+and install it at 
+
+` $env:programfiles\windowspowershell\modules.
 
 Also, be sure to have KB2883200 installed.
 
