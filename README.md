@@ -8,6 +8,7 @@ Chef Server Configuration
 Web Server configuration
 VM host configuration
 SQL server config
+WDS, WSUS configs
 ```
 
 ##Hyper-V
