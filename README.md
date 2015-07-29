@@ -16,7 +16,7 @@ are available [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree
 
 ## Desired State Configuration
 
-## SamplePushConfig
+#### SamplePushConfig
 
 Configures a server with the DNS and DHCP roles, then configures the roles to handle a web farm with 3 web servers, a sql
 server, and a caching server.  More information [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree/master/DSC).
