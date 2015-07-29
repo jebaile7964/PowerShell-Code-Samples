@@ -20,7 +20,7 @@ create hyper-v networking gw script
 ##SQL
 Create sql connection to propane
 
-##SRM
+##SCM
 Deploy and automate configuration of propane
 
 ##AD
