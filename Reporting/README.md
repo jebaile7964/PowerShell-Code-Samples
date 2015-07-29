@@ -1,4 +1,6 @@
-# GDI Handle Logger
+# Reporting
+
+#### GDI Handle Logger
 
 This script is designed to record when the Spooler service's GDI handle count reaches its max of 10000.  The necessity for
 such a script began when issues arose over certain printer drivers overloading the spooler when used to print from
