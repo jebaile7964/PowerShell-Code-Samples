@@ -21,6 +21,13 @@ are available [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree
 Configures a server with the DNS and DHCP roles, then configures the roles to handle a web farm with 3 web servers, a sql
 server, and a caching server.  More information [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree/master/DSC).
 
+## Reporting
+
+#### GDI Handle Logger
+
+A script that helped to diagnose a printing issue that was happening on production TS servers.  Issue was resolved after
+confirming that the spooler was crashing from a GDI handle overload.
+
 ## Software Configuration Management
 
 #### Push-DesktopPackages
@@ -32,6 +39,11 @@ manager.  While done in a for loop in this sample, the same process can be done 
 
 Uses .NET classes to create gui elements for use as a tool for junior resources.  It accepts input from a CSV, and some
 User input.  After processing, it creates the icons in their respective folders for deployment.
+
+#### Create-ShortcutIcons
+
+Creates desktop shortcuts to a networked drive shared application.  Written as a CMDlet.  Can take multiple parameter sets,
+for user input and CSV input.
 
 #### Samples to be added:
 
