@@ -28,6 +28,11 @@ server, and a caching server.  More information [here](https://github.com/jebail
 Utilizes `New-PSSession` and `Invoke-Command` CMDlets to install Adobe Reader and OpenOffice through the Chocolatey package
 manager.  While done in a for loop in this sample, the same process can be done in parallel with a workflow.
 
+#### Create-CloudRDPIcons
+
+Uses .NET classes to create gui elements for use as a tool for junior resources.  It accepts input from a CSV, and some
+User input.  After processing, it creates the icons in their respective folders for deployment.
+
 #### Samples to be added:
 
 ##DSC
