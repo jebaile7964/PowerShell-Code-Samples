@@ -21,6 +21,13 @@ are available [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree
 Configures a server with the DNS and DHCP roles, then configures the roles to handle a web farm with 3 web servers, a sql
 server, and a caching server.  More information [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree/master/DSC).
 
+## Software Configuration Management
+
+#### Push-DesktopPackages
+
+Utilizes `New-PSSession` and `Invoke-Command` CMDlets to install Adobe Reader and OpenOffice through the Chocolatey package
+manager.  While done in a for loop in this sample, the same process can be done in parallel with a workflow.
+
 #### Samples to be added:
 
 ##DSC
