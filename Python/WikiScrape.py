@@ -5,7 +5,7 @@
 import mwclient
 site = mwclient.Site(('https', 'en.wikipedia.org'))
 site.login('$user', '$pass') # credentials are sanitized from the script.
-listpage = site.Pages['User:jebaile7964/World_of_Warcraft']
+listpage = site.Pages['User:$user/World_of_Warcraft'] # page is sanitized.
 text = listpage.text()
 for page in site.Categories['World_of_Warcraft']:
     text += "* [[:" + page.name + "]]\n"
