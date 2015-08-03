@@ -25,7 +25,8 @@ server, and a caching server.  More information [here](https://github.com/jebail
 
 #### WikiScrape
 
-Uses MWClient to access the MediaWiki API.  It grabs all pages in the 'World of Warcraft' category, and parses it to a list page created in the MediaWiki user's page.  Requires the use of Python 2.7.9.
+Uses MWClient to access the MediaWiki API.  It grabs all pages in the 'World of Warcraft' category, and parses it to a list page created in the MediaWiki user's page.  Requires the use of Python 2.7.9.  Sample of what the page looks like can be
+found [here](https://en.wikipedia.org/wiki/User:Jebaile7964/World_of_Warcraft)
 
 ## Reporting
 
