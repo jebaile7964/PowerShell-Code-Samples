@@ -21,6 +21,12 @@ are available [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree
 Configures a server with the DNS and DHCP roles, then configures the roles to handle a web farm with 3 web servers, a sql
 server, and a caching server.  More information [here](https://github.com/jebaile7964/PowerShell-Code-Samples/tree/master/DSC).
 
+## Python Samples
+
+#### WikiScrape
+
+Uses MWClient to access the MediaWiki API.  It grabs all pages in the 'World of Warcraft' category, and parses it to a list page created in the MediaWiki user's page.  Requires the use of Python 2.7.9.
+
 ## Reporting
 
 #### GDI Handle Logger
