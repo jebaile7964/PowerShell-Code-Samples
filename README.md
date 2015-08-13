@@ -52,6 +52,10 @@ User input.  After processing, it creates the icons in their respective folders 
 Creates desktop shortcuts to a networked drive shared application.  Written as a CMDlet.  Can take multiple parameter sets,
 for user input and CSV input.
 
+#### Set-LegacyConsoleConfiguration
+
+Makes a couple of modifications to the behavior of the CMD shell.  Brings back legacy mode, and installs NTVDM.exe.
+
 #### Samples to be added:
 
 ##DSC
