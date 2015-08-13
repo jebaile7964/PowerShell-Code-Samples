@@ -9,3 +9,7 @@ script can also be written into a workflow to install each package in parallel.
 #### Create-CloudRDPIcons
 
 This script automates the creation of RDP files with a couple of gui elements and a bit of regex. It accepts csv input requests other data via the gui elements. After all the data is gathered, the regex operations start and a for loop iterates through the csv data, creating folders and icons for each new user.
+
+#### Set-LegacyConsoleConfiguration
+
+Shortly after Windows 10's launch, a stream of customer calls required the creation of an easily run script that would make some changes to the way Windows 10 handled 16 bit code.  This script rolls back the command shell to legacy mode, and automatically installs the NTVDM optional feature, then prompts the user to reboot the computer.
