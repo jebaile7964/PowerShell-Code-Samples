@@ -9,6 +9,10 @@
 A small script that utilizes the `Import-PSSession` CMDlet to import the ActiveDirectory module into a terminal server
 to see what users from a particular OU haven't logged in.
 
+#### Site DNS Tools Module
+
+Provides a number of tools for reporting and maintenance of Site DNS settings.
+
 ## Chocolatey Packages
 
 Samples of a couple of packages created that demonstrate how NuSpec requirements work with NuGet packages.  Instructions
