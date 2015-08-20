@@ -68,7 +68,7 @@ Function Set-SSSDnsSiteClientConfiguration {
                 $DnsChangeFailure += $DnsSettingsChange
             }
             $i++
-            Write-Progress -Activity 'Making DNS Modifications...' -Status "$i of $r.count completed." -PercentComplete (($i))
+            Write-Progress -Activity 'Making DNS Modifications...' -Status "$i of $RDPServer.count completed." -PercentComplete (($i/$RDPServer.count) * 100 )
         }
     }
     END{
