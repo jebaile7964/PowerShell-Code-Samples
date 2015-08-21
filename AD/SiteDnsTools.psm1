@@ -1,8 +1,8 @@
 Function Set-SSSDnsSiteClientConfiguration {
     BEGIN{
         $AllSites = Get-SSSCloudSitesInfo
-        $KansasSite = $AllSites | Where-Object sitename -match 'Kansas'
-        $DallasSite = $AllSites | Where-Object sitename -match 'Dallas'
+        $Site1 = $AllSites | Where-Object sitename -match $Site1
+        $Site2 = $AllSites | Where-Object sitename -match $Site2
         $RDPServer = Get-SSSRDPServersInfo
         $DnsChangeSuccess = @()
         $DnsChangeFailure = @()
@@ -12,14 +12,14 @@ Function Set-SSSDnsSiteClientConfiguration {
     PROCESS{
         foreach ($r in $RDPServer){
             $Site = $AllSites | Where-Object sitename -eq $r.site
-            if ($r.sitequerysuccessful -eq $true -and $Site.sitename -ne $KansasSite.sitename){
-                if ($r.primarydns -eq $site.dnsip -and $r.secondarydns -eq $kansassite.dnsip){
+            if ($r.sitequerysuccessful -eq $true -and $Site.sitename -ne $Site1.sitename){
+                if ($r.primarydns -eq $site.dnsip -and $r.secondarydns -eq $site2.dnsip){
                     Write-Host -ForegroundColor Green "$($r.name) is properly configured and will be skipped."
                     $DnsSettingsSkip += $r
                 }  
                 else{
                     $ScriptBlock = { $SetAdapter = gwmi win32_networkadapterconfiguration | Where-Object ipaddress -match $using:r.ipv4address
-                                     $DNSServers = "$($using:site.dnsip)","$($using:KansasSite.dnsip)"
+                                     $DNSServers = "$($using:site.dnsip)","$($using:Site1.dnsip)"
                                      $ExitCode = $SetAdapter.SetDnsServerSearchOrder($DNSServers)
                                      $SessionObject = new-object -TypeName psobject
                                      $SessionObjectProperties = gwmi win32_networkadapterconfiguration | Where-Object ipaddress -match $using:r.ipv4address `
@@ -35,13 +35,13 @@ Function Set-SSSDnsSiteClientConfiguration {
                     $DnsSettingsChange = Invoke-Command -Session $Session -ScriptBlock $ScriptBlock
                 }
             }
-            elseif($r.sitequerysuccessful -eq $true -and $Site.sitename -eq $KansasSite.sitename){
-                if ($r.primarydns -eq $site.dnsip -and $r.secondarydns -eq $DallasSite.dnsip){
+            elseif($r.sitequerysuccessful -eq $true -and $Site.sitename -eq $Site1.sitename){
+                if ($r.primarydns -eq $site.dnsip -and $r.secondarydns -eq $Site2.dnsip){
                     Write-Host -ForegroundColor Green "$($r.name) is properly configured and will be skipped."
                 }  
                 else{
                     $ScriptBlock = { $SetAdapter = gwmi win32_networkadapterconfiguration | Where-Object ipaddress -match $using:r.ipv4address
-                                     $DNSServers = "$($using:site.dnsip)","$($using:DallasSite.dnsip)"
+                                     $DNSServers = "$($using:site.dnsip)","$($using:Site2.dnsip)"
                                      $ExitCode = $SetAdapter.SetDnsServerSearchOrder($DNSServers)
                                      $SessionObject = new-object -TypeName psobject
                                      $SessionObjectProperties = gwmi win32_networkadapterconfiguration | Where-Object ipaddress -match $using:r.ipv4address `
@@ -101,15 +101,15 @@ Function Get-SSSRDPServersInfo{
                 $ScriptBlock = { gwmi win32_networkadapterconfiguration | select description,ipaddress,dnsserversearchorder }
                 $AdapterInfo = Invoke-Command -Session $Session -ScriptBlock $ScriptBlock
                 $Session | Remove-PSSession
-                $RdpServerObjectHamachiInfo = $AdapterInfo | Where-Object description -match 'Hamachi'
+                $RdpServerObjectVpniInfo = $AdapterInfo | Where-Object description -match $VpnAdapter
                 $RdpServerObjectAdapterInfo = $AdapterInfo | Where-Object ipaddress -match $r.ipv4address
-                $RDPServerObject | add-member -MemberType NoteProperty -Name 'HamachiAddress' -Value $RdpServerObjectHamachiInfo.ipaddress[0]
+                $RDPServerObject | add-member -MemberType NoteProperty -Name 'HamachiAddress' -Value $RdpServerObjectVpnInfo.ipaddress[0]
                 $RDPServerObject | add-member -MemberType NoteProperty -Name 'PrimaryDns' -Value $RdpServerObjectAdapterInfo.dnsserversearchorder[0]
                 $RDPServerObject | Add-Member -MemberType NoteProperty -Name 'SecondaryDns' -Value $RdpServerObjectAdapterInfo.dnsserversearchorder[1]
             }
             else {
                 $RDPServerObject | Add-Member -MemberType NoteProperty -Name 'SiteQuerySuccessful' -Value $false
-                $RDPServerObject | add-member -MemberType NoteProperty -Name 'HamachiAddress' -Value $null
+                $RDPServerObject | add-member -MemberType NoteProperty -Name 'VpnAddress' -Value $null
                 $RDPServerObject | add-member -MemberType NoteProperty -Name 'PrimaryDns' -Value $null
                 $RDPServerObject | Add-Member -MemberType NoteProperty -Name 'SecondaryDns' -Value $null
             }
