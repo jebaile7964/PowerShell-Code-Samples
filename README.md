@@ -62,6 +62,14 @@ Makes a couple of modifications to the behavior of the CMD shell.  Brings back l
 
 #### SSS Deployment Module
 
+Provides a set of tools that aid in the automated deployment of Software.
+
+#### SQL
+
+InstallSql2012
+
+Installs and configures SQL Server 2012 Express silently.
+
 #### Samples to be added:
 
 ##DSC
