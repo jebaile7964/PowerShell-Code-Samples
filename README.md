@@ -66,7 +66,7 @@ Provides a set of tools that aid in the automated deployment of Software.
 
 #### SQL
 
-InstallSql2012
+##### InstallSql2012
 
 Installs and configures SQL Server 2012 Express silently.
 
