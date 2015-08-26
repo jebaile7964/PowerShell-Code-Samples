@@ -60,6 +60,8 @@ for user input and CSV input.
 
 Makes a couple of modifications to the behavior of the CMD shell.  Brings back legacy mode, and installs NTVDM.exe.
 
+#### SSS Deployment Module
+
 #### Samples to be added:
 
 ##DSC
