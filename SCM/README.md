@@ -17,3 +17,87 @@ Creates desktop shortcuts to a networked drive shared application. Written as a 
 #### Set-LegacyConsoleConfiguration
 
 Shortly after Windows 10's launch, a stream of customer calls required the creation of an easily run script that would make some changes to the way Windows 10 handled 16 bit code.  This script rolls back the command shell to legacy mode, and automatically installs the NTVDM optional feature, then prompts the user to reboot the computer.
+
+#### SSS Deployment Module
+
+Provides a list of tools for deployment of Propane Software:
+
+##### Install-SSSChocolatey
+
+ensures the proper execution policy and Installs Chocolatey.  Returns a value from Get-SssDeployDependencies
+
+##### Install-SSSGit
+
+Checks for and installs Chocolatey, then installs git through the Chocolatey service.  Returns a value from Get-SssDeployDependencies
+
+##### Install-SssPowershell
+
+Checks the version of PowerShell, and through the Chocolatey service, installs the latest version depending on the OS version.
+
+##### Install-SssDotNet
+
+Checks the version of the dot net framework, and installs it via the Chocolatey service.
+
+##### Install-SssReportViewer
+
+##### Install-SssClrTypes
+
+##### Install-SssBaby36
+
+Brings up the installation program and readies information for quick installation.  The Installation program is gui based and can't be run silently.
+
+##### Install-SssOpenOffice
+
+Installs OpenOffice through the Chocolatey Service.
+
+##### Install-SssAdobeReader
+
+##### Install-Mappoint
+
+Installs Microsoft Mappoint from a provided network share folder.
+
+##### Import-SssModules
+
+Downloads Modules based on Validated set parameter provided, and copies them to a folder.
+
+##### Set-SssPsProfileInfo
+
+Sets the PS Profile for the logged in user.
+
+##### Initialize-SssPathType
+
+Creates a type from inline C# code that aids in the viewing and instantiation of custom objects.
+
+##### Initialize-SssProgramType
+
+Creates a type from inline C# code that aids in the viewing and instantiating of custom objects.
+
+##### Set-SssModuleManifest
+
+Creates manifest information, including versioning, of the module provided via parameter.
+
+##### Get-SssDeployDependencies
+
+Returns a value of all installed dependendcies on the computer.
+
+##### Get-SssChocoInfo
+
+Returns information regarding the Chocolatey Installation on the computer.
+
+##### Get-SssInstalledProgramsInfo
+
+Returns a value regarding all installed programs on Windows.
+
+##### Get-SssPathInfo
+
+Returns a value of all Paths related to the installation and deployment of Propane.
+
+##### Get-SssPsProfileInfo
+
+Checks to see if the proper values are set in the PS Profile of the logged on user.
+
+##### Get-SssModule
+
+Gets a list of all Suburban modules installed on the current machine.
+
+
