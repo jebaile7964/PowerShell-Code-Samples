@@ -597,3 +597,21 @@ Function Get-SSSModule {
         Get-Module -Name $ModuleName
     }
 }
+
+Function New-SSSHamachiSvcHelper{
+    BEGIN{
+        $JobName = 'Hamachi Service Start'
+        $Trigger = New-JobTrigger -AtLogOn
+        $Option = New-ScheduledJobOption -RunElevated -RequireNetwork
+    }
+    PROCESS{
+        $Scriptblock = {$HamachiSvc = get-service | where-object name -match 'hamachi2svc'
+                        if($HamachiSvc.status -ne 'running'){
+                        restart-service hamachi2svc
+}}    
+    }
+    END{
+        Register-ScheduledJob -ScriptBlock $Scriptblock -Name $JobName -Trigger $Trigger -ScheduledJobOption `
+        $Option
+    }
+}
