@@ -70,7 +70,7 @@ Function Get-SssOuRdpInfo{
     PROCESS{
         foreach($o in $OuObjects){
             $Obj = New-Object -TypeName psobject
-            $Obj | Add-Member -MemberType NoteProperty -Name 'OuName' -Value $o.Displayname
+            $Obj | Add-Member -MemberType NoteProperty -Name 'OuName' -Value $o.name
             $Obj | Add-Member -MemberType NoteProperty -Name 'DistinguishedName' -Value $o.distinguishedname
             $StringToProcess = $o.description
             $Array = $StringToProcess.split(';')
@@ -127,16 +127,16 @@ Function New-SssRdpUser{
            $LastName,
            $OuName )
     BEGIN{
-        $OuInfo = Get-SssOuRdpInfo | Where-Object -name -match $OuName
+        $OuInfo = Get-SssOuRdpInfo | Where-Object name -match $OuName
         $Group = Get-SssRdpGroupInfo | Where-Object distinguishedname -Match $OuInfo.distinguishedname
         $Name = $FirstName + ' ' + $LastName
         $SamAccountName = $FirstName + $LastName
         $userPrincipalName = $SamAccountName + '@suburbandomain2.com'
     }
     PROCESS{
-        if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $false){
+        if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $null){
             New-ADUser -AccountPassword (ConvertTo-SecureString -AsPlainText -String 'Propane1' -Force) -GivenName $FirstName -Surname $LastName `
-                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires -Path $OuInfo.distinguishedname
+                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires
             Add-ADGroupMember $Group.samaccountname $SamAccountName
         }
         else{
@@ -154,14 +154,14 @@ Function New-SssCloudCustomerConfiguration{
            $FailoverServer,
            $FailoverDriveLetter )
     BEGIN{
-        $Csv = Get-Content -Path $CsvPath
+        $Csv = Import-Csv $CsvPath
         $NewUserList = @()
     }
     PROCESS{
         $Ou = New-SssRdpOUConfig -PrimaryServerName $PrimaryServer -FailoverServerName $FailoverServer -FailoverDriveLetter $FailoverDriveLetter -OuName $OuName
         $Group = New-SssCompanySecurityGroups -UserGroupName $GroupName -OuName $Ou.name
         foreach ($c in $Csv){
-            $user = New-SssRdpUser -FirstName $c.FirstName -LastName $c.LastName -OuName $Ou.name
+            $user = New-SssRdpUser -FirstName $($c.FirstName) -LastName $($c.LastName) -OuName $($Ou.name)
             $NewUserList += $user
         }
 
@@ -170,5 +170,23 @@ Function New-SssCloudCustomerConfiguration{
         Write-Output $Ou
         Write-Output $Group
         Write-Output $NewUserList
+    }
+}
+
+Function Set-SssOuDescriptions{
+    Param( $CsvPath )
+    BEGIN{
+        $Csv = Import-Csv $CsvPath
+    }
+    PROCESS{
+        foreach ($c in $Csv){
+            $ou = $null
+            $Ou = Get-ADOrganizationalUnit -Filter * -Properties * | Where-Object name -Match $($c.ouname)
+            $Ou.description = "PrimaryServer= $($c.PrimaryServer);FailoverServer= $($c.FailoverServer); FailoverDriveLetter= $($c.FailoverDriveLetter)"
+            Set-ADOrganizationalUnit -Instance $Ou
+        }
+    }
+    END{
+        Get-SssOuRdpInfo
     }
 }
