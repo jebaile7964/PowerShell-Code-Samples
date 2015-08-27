@@ -52,3 +52,6 @@ Creates a new user for a particular VPS tenant and moves the user to their respe
 
 Automates the task of New Cloud Customer configurations with the use of CSV file input.
 
+##### Set-SssOuDescription
+
+Bulk adds OU specific information regarding VPS Tenant infrastructure.
