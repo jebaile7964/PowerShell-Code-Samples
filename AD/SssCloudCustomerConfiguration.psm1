@@ -180,8 +180,7 @@ Function Set-SssOuDescriptions{
     }
     PROCESS{
         foreach ($c in $Csv){
-            $ou = $null
-            $Ou = Get-ADOrganizationalUnit -Filter * -Properties * | Where-Object name -Match $($c.ouname)
+            $Ou = Get-ADOrganizationalUnit -Filter * -Properties * | Where-Object name -eq $($c.ouname)
             $Ou.description = "PrimaryServer= $($c.PrimaryServer);FailoverServer= $($c.FailoverServer); FailoverDriveLetter= $($c.FailoverDriveLetter)"
             Set-ADOrganizationalUnit -Instance $Ou
         }
