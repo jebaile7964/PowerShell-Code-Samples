@@ -66,6 +66,7 @@ Function Get-SssOuRdpInfo{
     BEGIN{
         $OuObjects = Get-ADOrganizationalUnit -Filter * -Properties * | Where-Object distinguishedname -Match 'OU=Remote Desktop User Organizations,DC=suburbandomain2,DC=com'
         $OuInfo = @()
+        $i = 0
     }
     PROCESS{
         foreach($o in $OuObjects){
@@ -84,6 +85,8 @@ Function Get-SssOuRdpInfo{
             $Obj | Add-Member -MemberType NoteProperty -Name 'FailoverServer' -Value $FailoverServer
             $Obj | Add-Member -MemberType NoteProperty -Name 'FailoverDrive' -Value $FailoverDrive
             $OuInfo += $Obj
+            $i++
+            Write-Progress -Activity 'Querying Domain Controller for Customer Information...' -Status "$i of $($OuObjects.count) completed" -PercentComplete (($i / $($OuObjects.count)) * 100)
         }
     }
     END{
@@ -135,8 +138,9 @@ Function New-SssRdpUser{
     }
     PROCESS{
         if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $null){
+            Write-Host -ForegroundColor Yellow "Adding user $Name to $ouinfo and $Group"
             New-ADUser -AccountPassword (ConvertTo-SecureString -AsPlainText -String 'Propane1' -Force) -GivenName $FirstName -Surname $LastName `
-                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires
+                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires $true -Path $($OuInfo.distinguishedname)
             Add-ADGroupMember $Group.samaccountname $SamAccountName
         }
         else{
@@ -156,6 +160,7 @@ Function New-SssCloudCustomerConfiguration{
     BEGIN{
         $Csv = Import-Csv $CsvPath
         $NewUserList = @()
+        $i = 0
     }
     PROCESS{
         $Ou = New-SssRdpOUConfig -PrimaryServerName $PrimaryServer -FailoverServerName $FailoverServer -FailoverDriveLetter $FailoverDriveLetter -OuName $OuName
@@ -163,6 +168,8 @@ Function New-SssCloudCustomerConfiguration{
         foreach ($c in $Csv){
             $user = New-SssRdpUser -FirstName $($c.FirstName) -LastName $($c.LastName) -OuName $($Ou.name)
             $NewUserList += $user
+            $i++
+            Write-Progress -Activity 'Creating new Users...' -Status "$i of $($csv.count) completed..." -PercentComplete (($i / $($csv.count)) * 100)
         }
 
     }
