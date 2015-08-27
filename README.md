@@ -13,6 +13,10 @@ to see what users from a particular OU haven't logged in.
 
 Provides a number of tools for reporting and maintenance of Site DNS settings.
 
+#### New Cloud Customer Configuration Module
+
+Provides a number of tools for reporting and creation of Active Directory objects for new and existing VPS tenants.
+
 ## Chocolatey Packages
 
 Samples of a couple of packages created that demonstrate how NuSpec requirements work with NuGet packages.  Instructions
@@ -90,12 +94,8 @@ create hyper-v networking gw script
 ##SQL
 Create sql connection to propane
 
-##SCM
-Deploy and automate configuration of propane
-
 ##AD
 ```
-Create OU, users, and groups
 create GPO and link it to an OU
 promote domain controller
 ```
