@@ -130,7 +130,7 @@ Function New-SssRdpUser{
            $LastName,
            $OuName )
     BEGIN{
-        $OuInfo = Get-SssOuRdpInfo | Where-Object name -match $OuName
+        $OuInfo = Get-SssOuRdpInfo | Where-Object ouname -match $OuName
         $Group = Get-SssRdpGroupInfo | Where-Object distinguishedname -Match $OuInfo.distinguishedname
         $Name = $FirstName + ' ' + $LastName
         $SamAccountName = $FirstName + $LastName
@@ -138,10 +138,10 @@ Function New-SssRdpUser{
     }
     PROCESS{
         if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $null){
-            Write-Host -ForegroundColor Yellow "Adding user $Name to $ouinfo and $Group"
+            Write-Host -ForegroundColor Yellow "Adding user $Name to $($ouinfo.ouname) and $($Group.name)"
             New-ADUser -AccountPassword (ConvertTo-SecureString -AsPlainText -String 'Propane1' -Force) -GivenName $FirstName -Surname $LastName `
                  -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires $true -Path $($OuInfo.distinguishedname)
-            Add-ADGroupMember $Group.samaccountname $SamAccountName
+            Add-ADGroupMember -Identity $group.name -Members $SamAccountName
         }
         else{
             Write-host -ForegroundColor Red 'WARNING: SamAccountName already exists.'
