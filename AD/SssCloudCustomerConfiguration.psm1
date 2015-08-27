@@ -136,7 +136,7 @@ Function New-SssRdpUser{
     PROCESS{
         if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $false){
             New-ADUser -AccountPassword (ConvertTo-SecureString -AsPlainText -String 'Propane1' -Force) -GivenName $FirstName -Surname $LastName `
-                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires
+                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires -Path $OuInfo.distinguishedname
             Add-ADGroupMember $Group.samaccountname $SamAccountName
         }
         else{
