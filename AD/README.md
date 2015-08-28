@@ -1,6 +1,6 @@
 # Active Directory Script Samples
 
-#### Get-UsersNotLoggedIn
+#### [Get-UsersNotLoggedIn](https://github.com/jebaile7964/PowerShell-Code-Samples/blob/master/AD/Get-UsersNotLoggedIn.ps1)
 
 Gets a list of all users in a specific OU that have never logged in to a terminal server.  It's done first by importing
 a PSsession from a domain controller to the terminal server in question, and then any users who have never logged in to
@@ -8,7 +8,7 @@ the server are displayed as output.
 
 This is useful for licensing, especially in a tenanted server environment.
 
-#### Site DNS Tools Module
+#### [Site DNS Tools Module](https://github.com/jebaile7964/PowerShell-Code-Samples/blob/master/AD/SiteDnsTools.psm1)
 
 This module provides a number of tools useful for reporting and configuration of production servers across multiple sites:
 
@@ -24,7 +24,7 @@ Pulls a list of all sites and includes their DC Name, DNS IP, Subnet, and Replic
 
 checks servers for proper dns client settings and automatically sets them to the standard settings if they aren't compliant.
 
-#### New Customer Cloud Configuration Module
+#### [New Customer Cloud Configuration Module](https://github.com/jebaile7964/PowerShell-Code-Samples/blob/master/AD/SssCloudCustomerConfiguration.psm1)
 
 Provides a set of tools to automate the process of configuring the OU, groups, and users of a new VPS tenant.
 
