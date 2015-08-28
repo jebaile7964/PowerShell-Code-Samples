@@ -73,24 +73,26 @@ Function Get-SssOuRdpInfo{
             $Obj = New-Object -TypeName psobject
             $Obj | Add-Member -MemberType NoteProperty -Name 'OuName' -Value $o.name
             $Obj | Add-Member -MemberType NoteProperty -Name 'DistinguishedName' -Value $o.distinguishedname
-            $StringToProcess = $o.description
-            $Array = $StringToProcess.split(';')
-            $PrimaryServer = $Array[0] -replace 'PrimaryServer= ',''
-            $PrimaryServer = $PrimaryServer.trim(' ')
-            $FailoverServer = $Array[1] -replace 'FailoverServer= ',''
-            $FailoverServer = $FailoverServer.trim(' ')
-            $FailoverDrive = $Array[2] -replace 'FailoverDriveLetter= ',''
-            $FailoverDrive = $FailoverDrive.trim(' ')
-            $Obj | Add-Member -MemberType NoteProperty -Name 'PrimaryServer' -Value $PrimaryServer
-            $Obj | Add-Member -MemberType NoteProperty -Name 'FailoverServer' -Value $FailoverServer
-            $Obj | Add-Member -MemberType NoteProperty -Name 'FailoverDrive' -Value $FailoverDrive
+            if ($o.description -ne $null){
+                $StringToProcess = $o.description
+                $Array = $StringToProcess.split(';')
+                $PrimaryServer = $Array[0] -replace 'PrimaryServer= ',''
+                $PrimaryServer = $PrimaryServer.trim(' ')
+                $FailoverServer = $Array[1] -replace 'FailoverServer= ',''
+                $FailoverServer = $FailoverServer.trim(' ')
+                $FailoverDrive = $Array[2] -replace 'FailoverDriveLetter= ',''
+                $FailoverDrive = $FailoverDrive.trim(' ')
+                $Obj | Add-Member -MemberType NoteProperty -Name 'PrimaryServer' -Value $PrimaryServer
+                $Obj | Add-Member -MemberType NoteProperty -Name 'FailoverServer' -Value $FailoverServer
+                $Obj | Add-Member -MemberType NoteProperty -Name 'FailoverDrive' -Value $FailoverDrive
+            }
             $OuInfo += $Obj
             $i++
             Write-Progress -Activity 'Querying Domain Controller for Customer Information...' -Status "$i of $($OuObjects.count) completed" -PercentComplete (($i / $($OuObjects.count)) * 100)
         }
     }
     END{
-        Write-Output $OuInfo
+        Write-Output $OuInfo | fl *
     }
 }
 
