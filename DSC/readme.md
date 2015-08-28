@@ -1,4 +1,4 @@
-# Sample DSC Configuration for a DNS/DHCP Server
+# [Sample DSC Configuration for a DNS/DHCP Server](https://github.com/jebaile7964/PowerShell-Code-Samples/blob/master/DSC/SamplePushConfig.ps1)
 
 This script is a DSC push configuration script that installs the DNS and DHCP server roles on
 a 2012 R2 server.  It was tested using Server 2012 R2 Core Datacenter Edition running PoSh v4.
