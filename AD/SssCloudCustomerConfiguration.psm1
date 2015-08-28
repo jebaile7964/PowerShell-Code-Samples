@@ -140,7 +140,7 @@ Function New-SssRdpUser{
         if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $null){
             Write-Host -ForegroundColor Yellow "Adding user $Name to $($ouinfo.ouname) and $($Group.name)"
             New-ADUser -AccountPassword (ConvertTo-SecureString -AsPlainText -String 'Propane1' -Force) -GivenName $FirstName -Surname $LastName `
-                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires $true -Path $($OuInfo.distinguishedname)
+                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires $true -Path $($OuInfo.distinguishedname) -Enabled $true
             Add-ADGroupMember -Identity $group.name -Members $SamAccountName
         }
         else{
@@ -196,3 +196,30 @@ Function Set-SssOuDescriptions{
         Get-SssOuRdpInfo
     }
 }
+
+Function New-SssInternalUser{
+    Param( $FirstName,
+           $LastName )
+    BEGIN{
+        $OuInfo = Get-ADOrganizationalUnit -Filter {name -eq 'SSS Users'} -Properties *
+        $GroupInfo = Get-ADGroup -Filter {name -eq 'Suburban software Users'} -Properties *
+        $Name = $FirstName + ' ' + $LastName
+        $SamAccountName = $FirstName + $LastName
+        $userPrincipalName = $SamAccountName + '@suburbandomain2.com'
+    }
+    PROCESS{
+        if((Get-ADUser -Filter {samaccountname -eq $SamAccountName}) -eq $null){
+            Write-Host -ForegroundColor Yellow "Adding user $Name to $($ouinfo.name) and $($GroupInfo.name)"
+            New-ADUser -AccountPassword (ConvertTo-SecureString -AsPlainText -String 'Propane1' -Force) -GivenName $FirstName -Surname $LastName `
+                 -Name $Name -SamAccountName $SamAccountName -PasswordNeverExpires $true -Path $($OuInfo.distinguishedname) -Enabled $true
+            Add-ADGroupMember -Identity $group.name -Members $SamAccountName
+        }
+        else{
+            Write-host -ForegroundColor Red 'WARNING: SamAccountName already exists.'
+        }
+    }
+    END{
+        Write-Output (Get-ADUser -Filter {samaccountname -eq $SamAccountName} -Properties *)
+    }
+}
+
