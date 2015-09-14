@@ -51,7 +51,7 @@ Function Install-SSSGit{
     }
 }
 
-Function Install-PowerShell{
+Function Install-SssPowerShell{
     BEGIN{
         $HostInfo = Get-Host
     }
@@ -613,5 +613,62 @@ Function New-SSSHamachiSvcHelper{
     END{
         Register-ScheduledJob -ScriptBlock $Scriptblock -Name $JobName -Trigger $Trigger -ScheduledJobOption `
         $Option
+    }
+}
+
+Function Get-SSSPropaneReleaseInfo{
+    BEGIN{
+        $CurrentReleasePath = 'C:\Users\bailey.jonathan\Documents\GitHub\RUNTIME'
+        $ReleasePath = 'I:\SSSAVES\RELEASES\RUNTIME'
+        $Libraries = @( 'ap',
+                        'gasupd',
+                        'gl',
+                        'inv',
+                        'pay',
+                        'vblib')
+        $ReleaseInfo = @()
+    }
+    PROCESS{
+        if ((Test-Path $CurrentReleasePath) -eq $false){
+            Write-Host -ForegroundColor Yellow 'No Release staging folder found.  Creating...'
+            md $CurrentReleasePath
+        }
+        if ((Test-Path $ReleasePath) -eq $false){
+            Write-Host -ForegroundColor Red 'Warning: current release drive not available.'
+            Get-PSDrive
+        }
+        else{
+            Foreach ($l in $Libraries){
+                $zip = $l + '.zip'
+                $LibraryPath = Join-Path $ReleasePath -ChildPath $zip
+                $LibraryHash = Get-FileHash $LibraryPath -Algorithm MD5
+                $CurrentPath = Join-Path $CurrentReleasePath -ChildPath $zip
+                $CurrentHash = Get-FileHash $CurrentPath -Algorithm MD5
+                $CurrentRepo = 'https://jebaile7964@bitbucket.org/jebaile7964/' + $l + '.git'
+                $LibObj = New-Object psobject
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'LibraryName' -Value $L
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'ReleasePath' -Value $LibraryPath
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'ReleaseHash' -Value $LibraryHash.hash
+                if($CurrentPath -eq $false){
+                    $LibObj | Add-Member -MemberType NoteProperty -Name 'CurrentReleaseExists' -Value $false
+                }
+                else{
+                    $LibObj | Add-Member -MemberType NoteProperty -Name 'CurrentReleaseExists' -Value $true
+                }
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'CurrentPath' -Value $CurrentPath
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'CurrentHash' -Value $CurrentHash.hash
+                if ($LibraryPath.hash -eq $CurrentPath.hash){
+                    $LibObj | Add-Member -MemberType NoteProperty -Name 'HashValuesMatch' -Value $true
+                }
+                else{
+                    $LibObj | Add-Member -MemberType NoteProperty -Name 'HashValuesMatch' -Value $false
+                }
+                $LibObj | 
+                $ReleaseInfo += $LibObj
+            }
+        }
+    }
+    END{
+        Write-Output $ReleaseInfo
     }
 }
