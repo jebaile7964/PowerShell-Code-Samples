@@ -92,7 +92,7 @@ Function Get-SssOuRdpInfo{
         }
     }
     END{
-        Write-Output $OuInfo | fl *
+        Write-Output $OuInfo | select OuName,DistinguishedName,PrimaryServer,FailoverServer,FailoverDrive
     }
 }
 
