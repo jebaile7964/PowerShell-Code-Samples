@@ -56,7 +56,7 @@ Function Install-SssPowerShell{
         $HostInfo = Get-Host
     }
     PROCESS{
-        if ($HostInfo.Version -lt '3.0' -and (gwmi win32_operatingsystem).version -le '6.0'){
+        if ($HostInfo.Version -lt '3.0' -and (gwmi win32_operatingsystem).version -match '6.0.6002'){
             choco.exe install wmf3 -version 3.0.20121027 -y
         }
         if ($HostInfo.Version -lt '3.0' -and (gwmi win32_operatingsystem).version -ge '6.1'){
@@ -267,6 +267,15 @@ Function Install-MapPoint{
     }
 }
 
+Function Install-Sss7z{
+    BEGIN{
+        Install-SSSChocolatey
+    }
+    PROCESS{
+    }
+    END{}
+}
+
 Function Import-SSSModules{
     Param( [ValideSet('SssDeployment','SssDnsSiteTools','SSSNewInstallModule')]
             $SSSModuleName )
@@ -291,6 +300,63 @@ Function Import-SSSModules{
     END{
         Get-SSSPathInfo -Name SSSModules
     }
+}
+
+Function Update-SssPropaneRelease {
+    Param ( $Tag,
+            $TagMessage,
+            $CommitMessage )
+    BEGIN{
+        Install-SSSGit
+        Install-Sss7z
+        $ReleaseInfo = Get-SSSPropaneReleaseInfo
+    }
+    PROCESS{
+        foreach ($r in $ReleaseInfo){
+            if ($r.releasehash -ne $r.currenthash){
+                Copy-Item $r.releasepath $r.currentpath -Force
+                Update-SssPropaneRepo -LocalRepository $r.localrepository -CurrentPath $r.currentpath 
+                Write-host -ForegroundColor Green "$($r.libraryname) has been updated"
+            }
+            else{
+                write-host -ForegroundColor Yellow "$($r.libraryname) is up to date."
+            }
+        }
+        Copy-Item C:\Users\bailey.jonathan\Documents\GitHub\GasUpd\* -Destination C:\Users\bailey.jonathan\Documents\GitHub\rpg\gas -Recurse -Force
+        Copy-Item C:\Users\bailey.jonathan\Documents\GitHub\Vblib -Destination C:\Users\bailey.jonathan\Documents\GitHub\rpg\vblib -Recurse -Force
+        Set-Location C:\Users\bailey.jonathan\Documents\GitHub\rpg
+        git add *
+        git tag -a $tag -m $TagMessage
+        git commit -m $CommitMessage
+    }
+    END{
+        Get-SSSPropaneReleaseInfo | select libraryname,hashvaluesmatch | ft -AutoSize
+    }
+}
+
+Function Update-SssPropaneRepo{
+    Param( $LocalRepository,
+           $CurrentPath,
+           $Tag,
+           $TagMessage,
+           $CommitMessage )
+    BEGIN{}
+    PROCESS{
+        set-location $LocalRepository
+        7z x $CurrentPath -y
+        git add *
+        git tag -a $tag -m $TagMessage
+        git commit -m $CommitMessage
+    }
+    END{}
+}
+
+foreach ($t in $test){
+    set-location $t.LocalRepository
+    7z x $t.CurrentPath -y
+    git add *
+    git tag -a 1.0.4 -m 'Test automated tag'
+    git commit -m 'Test automated commit'
 }
 
 Function Set-SSSPSProfileInfo{
@@ -644,9 +710,12 @@ Function Get-SSSPropaneReleaseInfo{
                 $LibraryHash = Get-FileHash $LibraryPath -Algorithm MD5
                 $CurrentPath = Join-Path $CurrentReleasePath -ChildPath $zip
                 $CurrentHash = Get-FileHash $CurrentPath -Algorithm MD5
+                $CurrentLocalRepo = Join-Path C:\Users\bailey.jonathan\Documents\GitHub -ChildPath $l
                 $CurrentRepo = 'https://jebaile7964@bitbucket.org/jebaile7964/' + $l + '.git'
                 $LibObj = New-Object psobject
                 $LibObj | Add-Member -MemberType NoteProperty -Name 'LibraryName' -Value $L
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'LocalRepository' -Value $CurrentLocalRepo
+                $LibObj | Add-Member -MemberType NoteProperty -Name 'RemoteRepository' -Value $CurrentRepo
                 $LibObj | Add-Member -MemberType NoteProperty -Name 'ReleasePath' -Value $LibraryPath
                 $LibObj | Add-Member -MemberType NoteProperty -Name 'ReleaseHash' -Value $LibraryHash.hash
                 if($CurrentPath -eq $false){
@@ -657,13 +726,12 @@ Function Get-SSSPropaneReleaseInfo{
                 }
                 $LibObj | Add-Member -MemberType NoteProperty -Name 'CurrentPath' -Value $CurrentPath
                 $LibObj | Add-Member -MemberType NoteProperty -Name 'CurrentHash' -Value $CurrentHash.hash
-                if ($LibraryPath.hash -eq $CurrentPath.hash){
+                if ($Libraryhash.hash -eq $Currenthash.hash){
                     $LibObj | Add-Member -MemberType NoteProperty -Name 'HashValuesMatch' -Value $true
                 }
                 else{
                     $LibObj | Add-Member -MemberType NoteProperty -Name 'HashValuesMatch' -Value $false
                 }
-                $LibObj | 
                 $ReleaseInfo += $LibObj
             }
         }
