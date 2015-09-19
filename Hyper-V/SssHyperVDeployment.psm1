@@ -3,21 +3,13 @@ Function Remove-SSSCheckpoints{
            $VMScope )
     BEGIN{}
     PROCESS{
-        If ($VMScope -eq 'All'){
-            $VMs = get-vm
+        switch ($VMScope){
+            ALL { $VMs = Get-VM }
+            RDP { $VMs = Get-VM | Where-Object name -Match 'RDP' }
+            SQL { $VMs = Get-VM | Where-Object name -Match 'SQL' }
+            DC { $VMs = Get-VM | Where-Object name -Match 'DC' }
+            SSS { $Vms = Get-VM | Where-Object name -Match 'SSS' }
         }
-        If($VMScope -eq 'RDP'){
-            $VMs = get-vm | where-object name -Match 'RDP'
-        }
-        If($VMScope -eq 'SQL'){
-            $VMs = get-vm | Where-Object name -Match 'SQL'
-        }
-        if($VMScope -eq 'DC'){
-            $VMs = Get-vm | Where-Object name -Match 'DC'
-        } 
-        if($VMScope -eq 'SSS'){
-            $VMs = Get-vm | Where-Object name -Match 'SSS'
-        } 
     }
     END{
         $VMs | Get-VMSnapshot | Remove-VMSnapshot
@@ -29,20 +21,12 @@ Function Get-SSSVMExports{
            $VMScope,
            $Path )
     BEGIN{
-        If ($VMScope -eq 'All'){
-            $VMs = get-vm
-        }
-        If($VMScope -eq 'RDP'){
-            $VMs = get-vm | where-object name -Match 'RDP'
-        }
-        If($VMScope -eq 'SQL'){
-            $VMs = get-vm | Where-Object name -Match 'SQL'
-        }
-        if($VMScope -eq 'DC'){
-            $VMs = Get-vm | Where-Object name -Match 'DC'
-        } 
-        if($VMScope -eq 'SSS'){
-            $VMs = Get-vm | Where-Object name -Match 'SSS'
+        switch($VMScope){
+            ALL {$VMs = Get-VM}
+            RPD { $VMs = Get-VM | Where-Object name -Match 'RDP' }
+            SQL { $VMs = get-vm | where-object name -Match 'SQL' }
+            DC { $VMs = get-vm | Where-Object name -Match 'DC' }
+            SSS { $VMs = get-vm | where-object name -Match 'SSS' }
         } 
         $i = 0
     }
@@ -70,10 +54,11 @@ New-SssRdpVmConfig{
         New-VM -Name $Name -MemoryStartupBytes 2048 -BootDevice VHD -SwitchName $SwitchName -VHDPath $VhdPath -Path $Path -Generation 1
         Set-VM -Name $Name -ProcessorCount 4 -DynamicMemory $true -MemoryMinimumBytes 2048
         Enable-VMIntegrationService -VMName $Name
-
-
     }
-    END{}
+    END{
+    $Result = get-vm -Name $Name
+    Write-Output $Result
+    }
 }
 
 New-SssRdpVmVhd{}
