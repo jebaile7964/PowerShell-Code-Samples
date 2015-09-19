@@ -227,7 +227,7 @@ Function Install-SSSOpenOffice{
             choco.exe install openoffice -y
         }
         else{
-            write-host -ForegroundColor Yellow 'Attention: OpenOffice could not be installed.'
+            write-host -ForegroundColor Yellow 'Attention: OpenOffice is already installed..'
         }
     }
     END{
@@ -269,36 +269,24 @@ Function Install-MapPoint{
 
 Function Install-Sss7z{
     BEGIN{
-        Install-SSSChocolatey
+        $DeploymentDependencies = Get-SSSInstalledProgramsInfo
     }
     PROCESS{
-    }
-    END{}
-}
-
-Function Import-SSSModules{
-    Param( [ValideSet('SssDeployment','SssDnsSiteTools','SSSNewInstallModule')]
-            $SSSModuleName )
-    BEGIN{
-        $PSModuleLocation = $env:PSModulePath
-        $PSModuleLocation = $PSModuleLocation.split(';')
-        $Dependencies = Get-SSSInstalledProgramsInfo
-        if( ($Dependencies.isInstalled | Where-Object displayname -eq 'git') -eq $false ){
-            Install-SSSGit
+        if ($DeploymentDependencies.chocolatey -eq $false){
+            Install-SSSChocolatey
+        }
+        if ($DeploymentDependencies.7z -eq $false){
+            choco.exe install 7zip -y
+        }
+        else{
+            write-host -ForegroundColor Yellow 'ATTENTION: 7-Zip is already installed.'
         }
     }
-    PROCESS{
-        foreach($p in $PSModuleLocation){
-            if ($p -eq 'C:\Program Files\windowspowershell\modules'){
-                Set-Location $p
-                git.exe clone $SSSModuleName --depth=1
-                $path = Join-Path $p -ChildPath $SSSModuleName
-                Set-SSSPathInfo -Name $SSSModuleName -Path $path
-            }
-        } 
-    }
     END{
-        Get-SSSPathInfo -Name SSSModules
+        $Check7z = Get-SSSDeployDependencies
+        if (($Check7z.isinstalled | Where-Object name -match '7-zip') -eq $false){
+            Write-Host -ForegroundColor Red 'ATTENTION: 7-Zip could not be installed.'
+        }
     }
 }
 
@@ -328,6 +316,7 @@ Function Update-SssPropaneRelease {
         git add *
         git tag -a $tag -m $TagMessage
         git commit -m $CommitMessage
+        git push origin master
     }
     END{
         Get-SSSPropaneReleaseInfo | select libraryname,hashvaluesmatch | ft -AutoSize
@@ -340,23 +329,22 @@ Function Update-SssPropaneRepo{
            $Tag,
            $TagMessage,
            $CommitMessage )
-    BEGIN{}
+    BEGIN{
+        $netrc = Join-Path $home -ChildPath '.netrc'
+        $Content = "machine $env:COMPUTERNAME login jebaile764 password G33kw33k!"
+        if ((Get-Content $netrc) -notmatch $Content){
+            Set-Content -Path $netrc -Value $Content
+        }
+    }
     PROCESS{
         set-location $LocalRepository
         7z x $CurrentPath -y
         git add *
         git tag -a $tag -m $TagMessage
         git commit -m $CommitMessage
+        git push origin master
     }
     END{}
-}
-
-foreach ($t in $test){
-    set-location $t.LocalRepository
-    7z x $t.CurrentPath -y
-    git add *
-    git tag -a 1.0.4 -m 'Test automated tag'
-    git commit -m 'Test automated commit'
 }
 
 Function Set-SSSPSProfileInfo{
