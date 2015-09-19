@@ -728,3 +728,59 @@ Function Get-SSSPropaneReleaseInfo{
         Write-Output $ReleaseInfo
     }
 }
+
+Function New-CloudCustomerIcons{
+    Param( $Path,
+           $DnsAddress,
+           $CompanyName,
+           $FirstName,
+           $LastName,
+           $WSID1,
+           $WSID2 )
+    BEGIN{
+        $Propane = $CompanyName + 'Propane'
+        $username = $FirstName + $LastName
+        $WSID = $WSID1, $WSID2
+        $Result = @()
+    }
+    PROCESS{
+        $UserFolder = Join-Path $Path -ChildPath $username
+        if ((Test-Path $UserFolder) -eq $false){
+            New-Item -Path $UserFolder -ItemType folder
+        }
+        foreach ($w in $WSID){
+            $Icon = 'Propane ' + $w + '.rdp'
+            $IconPath = Join-Path $UserFolder -ChildPath $Icon
+            $rdparray = @( "redirectclipboard:i:1",
+                           "redirectposdevices:i:0",
+                           "redirectprinters:i:1",
+                           "redirectcomports:i:1",
+                           "redirectsmartcards:i:1",
+                           "devicestoredirect:s:*",
+                           "drivestoredirect:s:*",
+                           "redirectdrives:i:1",
+                           "session bpp:i:32",
+                           "span monitors:i:1",
+                           "prompt for credentials on client:i:1",
+                           "remoteapplicationmode:i:1",
+                           "server port:i:3389",
+                           "authentication level:i:0",
+                           "allow font smoothing:i:1",
+                           "promptcredentialonce:i:1",
+                           "gatewayusagemethod:i:2",
+                           "gatewayprofileusagemethod:i:0",
+                           "gatewaycredentialssource:i:0",
+                           "full address:s:$DnsAddress",
+                           "alternate shell:s:||$Propane",
+                           "remoteapplicationprogram:s:||$Propane",
+                           "gatewayhostname:s:",
+                           "remoteapplicationname:s:$Propane",
+                           "remoteapplicationcmdline:s:$w" )
+            Set-Content -Path $IconPath -Value $rdparray
+            $Result += "$IconPath has been successfully created for $username"
+        }
+    }
+    END{
+        Write-Output $Result
+    }
+}
